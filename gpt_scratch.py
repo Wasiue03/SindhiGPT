@@ -9,32 +9,28 @@ import torch.nn as nn
 from torch.nn import functional as F
 import pandas as pd
 
-# 1. Properly load the text data
 try:
-    # Try reading with UTF-8 first (common for Sindhi)
     text_df = pd.read_csv("/content/only_articles.csv", encoding='utf-8')
 except UnicodeDecodeError:
-    # Fall back to other encodings if UTF-8 fails
+
     try:
         text_df = pd.read_csv("/content/only_articles.csv", encoding='utf-16')
     except:
         text_df = pd.read_csv("/content/only_articles.csv", encoding='windows-1256')
 
-# 2. Extract the text column (assuming your CSV has a column named 'text')
-text = ''.join(text_df['article'].astype(str).tolist())  # Combine all text
 
-# 3. Create character-level vocabulary with proper Sindhi handling
+text = ''.join(text_df['article'].astype(str).tolist())  
+
+
 chars = sorted(list(set(text)))
 vocab_size = len(chars)
 
 print(f"Vocabulary size: {vocab_size}")
-print("Sample characters:", chars[:20])  # Show first 20 unique characters
+print("Sample characters:", chars[:20])  
 
-# 4. Create mapping dictionaries
 stoi = {ch: i for i, ch in enumerate(chars)}
 itos = {i: ch for i, ch in enumerate(chars)}
 
-# 5. Encoder and decoder functions
 def encode(s):
     """Encode string to list of integers"""
     return [stoi[c] for c in s]
@@ -43,9 +39,8 @@ def decode(l):
     """Decode list of integers to string"""
     return ''.join([itos[i] for i in l])
 
-# Test the encoding/decoding
-test_str = "ڪتاب"  # Sample Sindhi word
-if len(chars) > 0:  # Only test if we found characters
+test_str = "ڪتاب"  
+if len(chars) > 0:  
     encoded = encode(test_str)
     decoded = decode(encoded)
     print(f"\nTest string: {test_str}")
@@ -53,7 +48,6 @@ if len(chars) > 0:  # Only test if we found characters
     print(f"Decoded: {decoded}")
     print("Decoding correct?", test_str == decoded)
 
-# Encode the text dataset
 data = torch.tensor(encode(text), dtype=torch.long)
 
 # Train/val split
@@ -125,7 +119,6 @@ class BigramLanguageModel(nn.Module):
 model = BigramLanguageModel(vocab_size)
 model.to(device)
 
-# Optimizer
 optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 
 
