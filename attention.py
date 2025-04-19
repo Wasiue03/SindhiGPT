@@ -1,12 +1,9 @@
 import pandas as pd
 
-# Load the CSV file
 df = pd.read_csv('/content/only_articles.csv', encoding='iso-8859-1')
 
-# Extract the first 1000 articles
 sindhi_articles = df['article'].head(1000)
 
-# Save to a text file
 with open('sindhi_articles.txt', 'w', encoding='utf-8') as f:
     for article in sindhi_articles:
         f.write(f"{article}\n")
